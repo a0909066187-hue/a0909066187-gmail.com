@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>第七組｜漂浮性水生植物 AR 教學</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #e9f7f1;
+    }
+
+    #header {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.92);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0 0 5px;
+      color: #18794e;
+    }
+
+    p {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    #status {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border-radius: 20px;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      text-align: center;
+      z-index: 1000;
+      min-width: 200px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header">
+    <h2>🌿 水上漂流記</h2>
+    <p>第七組｜探索漂浮性水生植物</p>
+  </div>
+
+  <div id="status">
+    正在啟動 AR，請允許相機權限
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    embedded>
+
+    <a-assets timeout="30000">
+      <a-asset-item
+        id="waterplant"
+        src="./W8_水生植物3D模型.glb">
+      </a-asset-item>
+    </a-assets>
+
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <a-entity
+      id="target"
+      mindar-image-target="targetIndex: 0">
+
+      <a-gltf-model
+        src="#waterplant"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="0.3 0.3 0.3">
+      </a-gltf-model>
+
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const statusText = document.getElementById("status");
+    const target = document.getElementById("target");
+    const scene = document.querySelector("a-scene");
+
+    scene.addEventListener("arReady", () => {
+      statusText.textContent =
+        "請將相機對準浮萍 AR 圖卡";
+    });
+
+    scene.addEventListener("arError", () => {
+      statusText.textContent =
+        "AR 啟動失敗，請檢查相機權限及辨識檔";
+    });
+
+    target.addEventListener("targetFound", () => {
+      statusText.textContent =
+        "辨識成功！請觀察浮萍的葉與根";
+    });
+
+    target.addEventListener("targetLost", () => {
+      statusText.textContent =
+        "請重新對準浮萍 AR 圖卡";
+    });
+  </script>
+
+</body>
+</html>
