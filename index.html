@@ -9,12 +9,10 @@
                  initial-scale=1.0,
                  user-scalable=no">
 
-  <title>水上漂流記｜AR 測試</title>
+  <title>水上漂流記｜浮萍 AR</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
@@ -24,55 +22,76 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #111;
-      font-family: "Microsoft JhengHei", sans-serif;
+      background: transparent;
+      font-family: "Microsoft JhengHei",
+                   "Noto Sans TC", sans-serif;
     }
 
-    /* AR 場景填滿螢幕 */
     a-scene {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       width: 100vw !important;
       height: 100dvh !important;
+      background: transparent !important;
     }
 
-    /* 讓 WebGL 畫布填滿場景 */
-    a-scene canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    #title {
+    #header {
       position: fixed;
       z-index: 1000;
-      top: 15px;
+      top: 12px;
       left: 5%;
       width: 90%;
       box-sizing: border-box;
-      padding: 15px;
-      border-radius: 15px;
+      padding: 14px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.92);
-      color: #176c46;
       text-align: center;
-      font-size: 20px;
-      font-weight: bold;
       pointer-events: none;
+    }
+
+    #header h2 {
+      margin: 0;
+      color: #18794e;
+      font-size: 22px;
+    }
+
+    #header p {
+      margin: 6px 0 0;
+      color: #52645b;
+      font-size: 13px;
     }
 
     #status {
       position: fixed;
       z-index: 1000;
-      bottom: 35px;
+      bottom: 30px;
       left: 5%;
       width: 90%;
       box-sizing: border-box;
       padding: 15px;
       border-radius: 15px;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.82);
       color: white;
-      text-align: center;
       font-size: 15px;
+      text-align: center;
+      line-height: 1.5;
+      pointer-events: none;
+    }
+
+    #debug {
+      position: fixed;
+      z-index: 1000;
+      top: 110px;
+      left: 5%;
+      width: 90%;
+      box-sizing: border-box;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.92);
+      color: #176c46;
+      font-size: 13px;
+      text-align: center;
       pointer-events: none;
     }
   </style>
@@ -80,12 +99,17 @@
 
 <body>
 
-  <div id="title">
-    🌿 水上漂流記｜AR 測試
+  <div id="header">
+    <h2>🌿 水上漂流記</h2>
+    <p>第七組｜漂浮性水生植物：浮萍</p>
+  </div>
+
+  <div id="debug">
+    正在準備 3D 浮萍模型……
   </div>
 
   <div id="status">
-    正在啟動 AR 相機……
+    請允許相機權限
   </div>
 
   <a-scene
@@ -96,13 +120,22 @@
       uiScanning: no;
       uiError: yes;
     "
+    embedded
     color-space="sRGB"
-    renderer="colorManagement: true; antialias: true;"
+    renderer="
+      colorManagement: true;
+      antialias: true;
+      alpha: true;
+    "
     vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    embedded>
+    device-orientation-permission-ui="enabled: false">
 
-    <a-assets>
+    <!-- 預先載入浮萍 GLB -->
+    <a-assets timeout="60000">
+      <a-asset-item
+        id="duckweedAsset"
+        src="./duckweed_ar.glb">
+      </a-asset-item>
     </a-assets>
 
     <!-- AR 相機 -->
@@ -111,48 +144,49 @@
       look-controls="enabled: false">
     </a-camera>
 
-    <!-- 圖卡辨識 -->
+    <!-- 補光 -->
+    <a-entity
+      light="
+        type: ambient;
+        color: #ffffff;
+        intensity: 1.8;
+      ">
+    </a-entity>
+
+    <a-entity
+      light="
+        type: directional;
+        color: #ffffff;
+        intensity: 2;
+      "
+      position="1 2 3">
+    </a-entity>
+
+    <!-- 浮萍圖卡辨識 -->
     <a-entity
       id="target"
       mindar-image-target="targetIndex: 0">
 
-      <!-- 粉紅色測試方塊 -->
-      <a-box
-        position="0 0 0.2"
-        rotation="0 30 0"
-        width="0.35"
-        height="0.35"
-        depth="0.35"
+      <!-- 浮萍模型 -->
+      <a-gltf-model
+        id="duckweedModel"
+        src="#duckweedAsset"
+        position="0 0 0.15"
+        rotation="90 0 0"
+        scale="0.35 0.35 0.35"
+        visible="true">
+      </a-gltf-model>
+
+      <!-- 小型定位標記：測試完成後可移除 -->
+      <a-sphere
+        id="marker"
+        position="0.45 0 0.12"
+        radius="0.055"
         material="
           color: #ff1493;
           shader: flat;
-          side: double;
-          opacity: 1;
-        ">
-      </a-box>
-
-      <!-- 黃色測試球 -->
-      <a-sphere
-        position="0.4 0 0.15"
-        radius="0.12"
-        material="
-          color: #ffff00;
-          shader: flat;
         ">
       </a-sphere>
-
-      <!-- 藍色定位平面 -->
-      <a-plane
-        position="0 0 -0.01"
-        width="0.9"
-        height="0.9"
-        material="
-          color: #00bfff;
-          opacity: 0.35;
-          transparent: true;
-          side: double;
-        ">
-      </a-plane>
 
     </a-entity>
 
@@ -162,31 +196,91 @@
     const status =
       document.getElementById("status");
 
+    const debug =
+      document.getElementById("debug");
+
     const scene =
       document.querySelector("a-scene");
 
     const target =
       document.getElementById("target");
 
-    scene.addEventListener("arReady", () => {
-      status.textContent =
-        "✅ AR 已啟動，請對準浮萍圖卡";
-    });
+    const model =
+      document.getElementById("duckweedModel");
 
-    scene.addEventListener("arError", () => {
-      status.textContent =
-        "❌ AR 啟動失敗，請檢查相機權限";
-    });
+    let modelReady = false;
+    let tracking = false;
 
-    target.addEventListener("targetFound", () => {
-      status.textContent =
-        "✅ 已辨識圖卡！應出現粉紅方塊、黃色球與藍色平面";
-    });
+    function updateStatus() {
+      if (tracking && modelReady) {
+        status.textContent =
+          "🌿 辨識成功！請觀察浮萍的葉狀體與細根";
+      } else if (tracking) {
+        status.textContent =
+          "已辨識圖卡，正在等待浮萍模型";
+      } else if (modelReady) {
+        status.textContent =
+          "模型已準備完成，請對準浮萍圖卡";
+      }
+    }
 
-    target.addEventListener("targetLost", () => {
-      status.textContent =
-        "請重新對準浮萍圖卡";
-    });
+    model.addEventListener(
+      "model-loaded",
+      function () {
+        modelReady = true;
+
+        debug.textContent =
+          "✅ 浮萍 GLB 已載入";
+
+        updateStatus();
+      }
+    );
+
+    model.addEventListener(
+      "model-error",
+      function (event) {
+        const error =
+          event.detail &&
+          event.detail.message
+            ? event.detail.message
+            : "未知錯誤";
+
+        debug.textContent =
+          "❌ 模型載入失敗：" + error;
+      }
+    );
+
+    scene.addEventListener(
+      "arReady",
+      function () {
+        status.textContent =
+          "AR 相機已啟動，請對準浮萍圖卡";
+      }
+    );
+
+    scene.addEventListener(
+      "arError",
+      function () {
+        status.textContent =
+          "❌ AR 啟動失敗，請檢查相機權限";
+      }
+    );
+
+    target.addEventListener(
+      "targetFound",
+      function () {
+        tracking = true;
+        updateStatus();
+      }
+    );
+
+    target.addEventListener(
+      "targetLost",
+      function () {
+        tracking = false;
+        updateStatus();
+      }
+    );
   </script>
 
 </body>
