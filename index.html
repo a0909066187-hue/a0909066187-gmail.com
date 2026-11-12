@@ -9,35 +9,30 @@
 
   <title>水上漂流記｜第七組浮萍 AR</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
-  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       overflow: hidden;
+      background: #102b23;
       font-family: "Microsoft JhengHei",
                    "Noto Sans TC", sans-serif;
-      background: #142d25;
     }
 
     #header {
       position: fixed;
-      top: 12px;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
-      max-width: 440px;
-      padding: 12px 16px;
-      border-radius: 15px;
-      background: rgba(255,255,255,0.94);
+      max-width: 460px;
+      padding: 13px;
+      background: rgba(255,255,255,.94);
+      border-radius: 16px;
       text-align: center;
       z-index: 1000;
       pointer-events: none;
@@ -45,32 +40,30 @@
 
     #header h2 {
       margin: 0 0 5px;
-      font-size: 21px;
-      color: #18794e;
+      color: #147b4c;
+      font-size: 22px;
     }
 
     #header p {
       margin: 0;
+      color: #53655b;
       font-size: 13px;
-      color: #52635a;
     }
 
     #debug {
       position: fixed;
-      top: 100px;
-      left: 12px;
-      right: 12px;
-      max-width: 440px;
-      margin: auto;
+      top: 115px;
+      left: 4%;
+      width: 92%;
       padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.91);
-      color: #204d38;
-      font-size: 12px;
-      line-height: 1.6;
+      background: rgba(255,255,255,.94);
+      border-radius: 12px;
+      color: #194e37;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
       z-index: 1000;
       pointer-events: none;
-      overflow-wrap: anywhere;
     }
 
     #status {
@@ -79,14 +72,14 @@
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
-      max-width: 440px;
-      padding: 13px 16px;
-      border-radius: 14px;
-      background: rgba(0,0,0,0.82);
-      color: #fff;
-      font-size: 14px;
-      line-height: 1.6;
+      max-width: 460px;
+      padding: 14px;
+      background: rgba(0,0,0,.82);
+      color: white;
+      border-radius: 15px;
       text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
       z-index: 1000;
       pointer-events: none;
     }
@@ -101,77 +94,57 @@
   </div>
 
   <div id="debug">
-    系統狀態：正在初始化
+    系統初始化中……
   </div>
 
   <div id="status">
     正在啟動 AR，請允許相機權限
   </div>
 
-  <!-- AR 場景 -->
   <a-scene
+    id="arScene"
     mindar-image="imageTargetSrc: ./targets.mind;
                   autoStart: true;
                   uiLoading: yes;
                   uiScanning: no;
                   uiError: yes;"
-    color-space="sRGB"
+    embedded
     renderer="colorManagement: true;
               antialias: true;"
     vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    embedded>
+    device-orientation-permission-ui="enabled: false">
 
-    <!-- 新版 GLB -->
-    <a-assets timeout="60000">
-      <a-asset-item
-        id="duckweedAsset"
-        src="./duckweed_ar.glb">
-      </a-asset-item>
-    </a-assets>
-
-    <!-- 光源 -->
     <a-entity
       light="type: ambient;
-             color: #ffffff;
-             intensity: 1.5">
+             intensity: 1.5;
+             color: #ffffff">
     </a-entity>
 
     <a-entity
       light="type: directional;
-             color: #ffffff;
-             intensity: 2.0"
+             intensity: 2;
+             color: #ffffff"
       position="1 3 2">
     </a-entity>
 
-    <a-entity
-      light="type: directional;
-             color: #ffffff;
-             intensity: 0.8"
-      position="-2 1 -1">
-    </a-entity>
-
-    <!-- AR 相機 -->
     <a-camera
       position="0 0 0"
       look-controls="enabled: false">
     </a-camera>
 
-    <!-- 圖卡辨識目標 -->
     <a-entity
       id="arTarget"
       mindar-image-target="targetIndex: 0">
 
-      <!-- 模型縮放與定位容器 -->
-      <a-entity id="modelWrapper">
+      <a-entity
+        id="modelWrapper">
 
-        <a-gltf-model
+        <a-entity
           id="duckweedModel"
-          src="#duckweedAsset"
           position="0 0 0"
-          rotation="0 0 0"
+          rotation="-90 0 0"
           scale="1 1 1">
-        </a-gltf-model>
+        </a-entity>
 
       </a-entity>
 
@@ -180,190 +153,227 @@
   </a-scene>
 
   <script>
-    const scene =
-      document.querySelector("a-scene");
+    const scene = document.getElementById("arScene");
+    const target = document.getElementById("arTarget");
+    const wrapper = document.getElementById("modelWrapper");
+    const model = document.getElementById("duckweedModel");
+    const debugBox = document.getElementById("debug");
+    const statusBox = document.getElementById("status");
 
-    const target =
-      document.getElementById("arTarget");
-
-    const model =
-      document.getElementById("duckweedModel");
-
-    const wrapper =
-      document.getElementById("modelWrapper");
-
-    const statusBox =
-      document.getElementById("status");
-
-    const debugBox =
-      document.getElementById("debug");
-
-    let arReady = false;
     let modelReady = false;
-    let targetFound = false;
-    let failed = false;
+    let tracking = false;
+    let arReady = false;
+    let hasError = false;
 
-    function setDebug(message) {
+    // 加上版本參數，避免舊 GLB 快取
+    const modelURL =
+      "./duckweed_ar.glb?v=final20261112";
+
+    function debug(message) {
       debugBox.textContent = message;
-      console.log("[浮萍AR]", message);
+      console.log("[第七組 AR]", message);
     }
 
     function updateStatus() {
-      if (failed) return;
+      if (hasError) return;
 
-      if (modelReady && targetFound) {
+      if (tracking && modelReady) {
         statusBox.textContent =
-          "🌿 辨識成功！請觀察浮萍的葉狀體與細根";
-      }
-      else if (targetFound) {
+          "🌿 辨識成功！請觀察浮萍的葉狀體與水下細根";
+      } else if (tracking) {
         statusBox.textContent =
-          "已辨識圖卡，正在等待模型載入";
-      }
-      else if (modelReady && arReady) {
+          "圖卡辨識成功，正在等待模型載入";
+      } else if (modelReady) {
         statusBox.textContent =
-          "模型準備完成！請將相機對準浮萍 AR 圖卡";
-      }
-      else if (arReady) {
+          "模型準備完成，請對準浮萍 AR 圖卡";
+      } else if (arReady) {
         statusBox.textContent =
-          "AR 已啟動，正在載入浮萍模型";
+          "AR 已啟動，正在載入 3D 模型";
+      } else {
+        statusBox.textContent =
+          "正在啟動 AR，請允許相機權限";
       }
     }
 
-    // AR 啟動成功
+    function showError(message) {
+      hasError = true;
+      debug("❌ " + message);
+      statusBox.textContent =
+        "模型載入異常，請查看上方錯誤資訊";
+    }
+
+    // 先取得檔案，檢查 HTTP 狀態及 GLB 標頭
+    async function loadModel() {
+      try {
+        debug("① 正在下載 duckweed_ar.glb");
+
+        const response = await fetch(
+          modelURL,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "模型下載 HTTP " + response.status
+          );
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        if (buffer.byteLength < 20) {
+          throw new Error("模型檔案太小");
+        }
+
+        const bytes = new Uint8Array(buffer, 0, 4);
+        const signature = String.fromCharCode(
+          bytes[0], bytes[1], bytes[2], bytes[3]
+        );
+
+        if (signature !== "glTF") {
+          throw new Error(
+            "下載內容不是有效 GLB 標頭"
+          );
+        }
+
+        debug(
+          "② GLB 下載成功：" +
+          (buffer.byteLength / 1024 / 1024).toFixed(2) +
+          " MB，正在解析模型"
+        );
+
+        // 將已驗證的檔案交給 A-Frame 載入
+        const blob = new Blob(
+          [buffer],
+          { type: "model/gltf-binary" }
+        );
+
+        const blobURL = URL.createObjectURL(blob);
+
+        model.addEventListener(
+          "model-loaded",
+          () => {
+            try {
+              const mesh = model.getObject3D("mesh");
+
+              if (!mesh) {
+                throw new Error("GLB 沒有可用的網格");
+              }
+
+              // 先讓旋轉矩陣更新
+              model.object3D.updateMatrixWorld(true);
+
+              const box = new THREE.Box3()
+                .setFromObject(mesh);
+
+              if (box.isEmpty()) {
+                throw new Error("模型邊界為空");
+              }
+
+              const size = new THREE.Vector3();
+              const center = new THREE.Vector3();
+
+              box.getSize(size);
+              box.getCenter(center);
+
+              const maxSize = Math.max(
+                size.x, size.y, size.z
+              );
+
+              if (
+                !Number.isFinite(maxSize) ||
+                maxSize <= 0
+              ) {
+                throw new Error("模型尺寸不正確");
+              }
+
+              // 把模型最長邊調整到 0.8
+              const factor = 0.8 / maxSize;
+
+              wrapper.object3D.scale.setScalar(factor);
+
+              // 把模型中心移到 AR 圖卡中心
+              wrapper.object3D.position.set(
+                -center.x * factor,
+                -center.y * factor,
+                -center.z * factor
+              );
+
+              modelReady = true;
+              hasError = false;
+
+              debug(
+                "✅ 模型解析成功！尺寸：" +
+                size.x.toFixed(2) + " × " +
+                size.y.toFixed(2) + " × " +
+                size.z.toFixed(2)
+              );
+
+              updateStatus();
+
+            } catch (error) {
+              showError(
+                "模型定位失敗：" + error.message
+              );
+            } finally {
+              URL.revokeObjectURL(blobURL);
+            }
+          },
+          { once: true }
+        );
+
+        model.addEventListener(
+          "model-error",
+          (event) => {
+            console.error("model-error", event.detail);
+            showError(
+              "GLB 解析失敗，請截圖並回報"
+            );
+            URL.revokeObjectURL(blobURL);
+          },
+          { once: true }
+        );
+
+        model.setAttribute(
+          "gltf-model",
+          blobURL
+        );
+
+      } catch (error) {
+        console.error(error);
+        showError(error.message);
+      }
+    }
+
     scene.addEventListener("arReady", () => {
       arReady = true;
       updateStatus();
     });
 
-    // AR 啟動失敗
     scene.addEventListener("arError", () => {
-      failed = true;
-      statusBox.textContent =
-        "AR 啟動失敗，請檢查相機權限與辨識檔";
-      setDebug("AR 初始化錯誤");
+      showError("AR 相機或辨識系統啟動失敗");
     });
 
-    // 辨識到圖卡
     target.addEventListener("targetFound", () => {
-      targetFound = true;
+      tracking = true;
       updateStatus();
     });
 
-    // 圖卡離開畫面
     target.addEventListener("targetLost", () => {
-      targetFound = false;
+      tracking = false;
       updateStatus();
     });
 
-    // 新模型載入成功
-    model.addEventListener("model-loaded", () => {
-
-      try {
-        const mesh = model.getObject3D("mesh");
-
-        if (!mesh) {
-          throw new Error("找不到模型網格");
-        }
-
-        mesh.updateMatrixWorld(true);
-
-        // 計算模型實際尺寸
-        const box = new THREE.Box3()
-          .setFromObject(mesh);
-
-        if (box.isEmpty()) {
-          throw new Error("模型沒有可見幾何");
-        }
-
-        const size = new THREE.Vector3();
-        const center = new THREE.Vector3();
-
-        box.getSize(size);
-        box.getCenter(center);
-
-        const maxDimension = Math.max(
-          size.x,
-          size.y,
-          size.z
-        );
-
-        if (
-          !Number.isFinite(maxDimension) ||
-          maxDimension <= 0
-        ) {
-          throw new Error("模型尺寸無效");
-        }
-
-        // 自動將最長邊縮放至 0.8 AR 單位
-        const scaleFactor = 0.8 / maxDimension;
-
-        // 將模型中心移至圖卡中心
-        wrapper.object3D.scale.setScalar(
-          scaleFactor
-        );
-
-        wrapper.object3D.position.set(
-          -center.x * scaleFactor,
-          -center.y * scaleFactor,
-          -center.z * scaleFactor
-        );
-
-        // 顯示模型
-        model.object3D.visible = true;
-
-        modelReady = true;
-
-        setDebug(
-          "✅ 模型載入成功｜" +
-          "尺寸：" +
-          size.x.toFixed(2) + " × " +
-          size.y.toFixed(2) + " × " +
-          size.z.toFixed(2) +
-          "｜縮放：" +
-          scaleFactor.toFixed(4)
-        );
-
-        updateStatus();
-
-      } catch (error) {
-        failed = true;
-        setDebug(
-          "❌ 模型處理錯誤：" + error.message
-        );
-        statusBox.textContent =
-          "模型已下載，但處理時發生錯誤";
-        console.error(error);
-      }
-
-    });
-
-    // GLB 模型載入失敗
-    model.addEventListener("model-error", (event) => {
-      failed = true;
-
-      setDebug(
-        "❌ GLB 模型載入失敗"
+    // 等待 A-Frame 場景完成初始化
+    if (scene.hasLoaded) {
+      loadModel();
+    } else {
+      scene.addEventListener(
+        "loaded",
+        loadModel,
+        { once: true }
       );
-
-      statusBox.textContent =
-        "3D 模型載入失敗，請檢查檔案";
-
-      console.error(
-        "GLB model-error:",
-        event.detail
-      );
-    });
-
-    // 資源下載失敗
-    document.getElementById("duckweedAsset")
-      .addEventListener("error", () => {
-        failed = true;
-        setDebug("❌ duckweed_ar.glb 資源下載失敗");
-        statusBox.textContent =
-          "模型檔案下載失敗";
-      });
+    }
 
   </script>
-
 </body>
 </html>
